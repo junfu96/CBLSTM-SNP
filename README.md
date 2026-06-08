@@ -4,47 +4,40 @@ Theoretical Derivation
 
 ## Motivation
 
-The original LSTM-SNP model performs recurrent state evolution through memory preservation and spike-driven consumption. Although this mechanism is capable of modeling nonlinear temporal dynamics, excessive state attenuation may occur during long-term propagation, resulting in unstable hidden-state evolution and information loss.
+The original LSTM-SNP model performs recurrent state evolution through memory preservation and spike-driven consumption. Although this mechanism can model nonlinear temporal dynamics, excessive state attenuation may occur during long-term propagation, resulting in information loss and unstable hidden-state evolution.
 
-To address this issue, CBLSTM-SNP introduces a compensation mechanism that explicitly restores useful state information during recurrent updates.
+To alleviate this issue, CBLSTM-SNP introduces an explicit compensation mechanism that adaptively restores useful state information during recurrent updates.
 
-The hidden state update can be written as
+The hidden-state update is defined as
 
-[
-u(t)
-====
-
-## r(t)\odot u(t-1)
-
-c(t)\odot a(t)
-+
-k(t)\odot z(t),
-]
+$$
+u(t)=r(t)\odot u(t-1)-c(t)\odot a(t)+k(t)\odot z(t),
+$$
 
 where:
 
-* (r(t)) controls memory retention;
-* (c(t)) controls spike consumption;
-* (k(t)) controls adaptive compensation;
-* (z(t)) is the regulation signal.
+* $r(t)$: memory retention gate
+* $c(t)$: spike consumption gate
+* $k(t)$: compensation gate
+* $z(t)$: regulation signal
 
-The entire model can therefore be interpreted as a balance among memory preservation, information consumption, and adaptive restoration.
+The entire recurrent process can therefore be interpreted as a balance among memory preservation, information consumption, and adaptive restoration.
 
 ---
 
 # Dynamic Interpretation
 
-The recurrent dynamics consist of three interacting components.
+The hidden-state evolution of CBLSTM-SNP consists of three interacting components.
 
 ## 1. Memory Retention
 
-[
+$$
 r(t)\odot u(t-1)
-]
+$$
 
 This term preserves useful historical information.
 
-A larger value of (r(t)) allows more previous-state information to be carried into the next time step, thereby enhancing long-term memory capability.
+A larger value of $r(t)$ allows more previous-state information to be carried into the next time step, improving long-term memory capability.
 
 Conceptually:
 
@@ -62,13 +55,13 @@ Preserved Memory
 
 ## 2. Nonlinear Consumption
 
-[
+$$
 c(t)\odot a(t)
-]
+$$
 
 This term removes obsolete or redundant information.
 
-The spike-generation signal (a(t)) acts as a nonlinear consumption factor that suppresses unnecessary state components during temporal propagation.
+The spike generation signal $a(t)$ acts as a nonlinear consumption factor that suppresses unnecessary state components during temporal propagation.
 
 Conceptually:
 
@@ -86,15 +79,15 @@ Information Reduction
 
 ## 3. Adaptive Compensation
 
-[
+$$
 k(t)\odot z(t)
-]
+$$
 
-This is the key innovation of CBLSTM-SNP.
+This is the core innovation of CBLSTM-SNP.
 
 When excessive attenuation occurs, the compensation pathway restores useful information back into the hidden state.
 
-Unlike conventional recurrent models that only perform memory preservation and forgetting, CBLSTM-SNP explicitly introduces a recovery mechanism.
+Unlike conventional recurrent architectures that only perform memory preservation and forgetting, CBLSTM-SNP explicitly introduces a recovery mechanism.
 
 Conceptually:
 
@@ -112,7 +105,7 @@ State Restoration
 
 # Overall Dynamical View
 
-The complete state transition can be viewed as
+The complete state transition can be interpreted as:
 
 ```text
 Historical State
@@ -134,19 +127,19 @@ Historical State
    New Hidden State
 ```
 
-Therefore, CBLSTM-SNP can be regarded as a compensation-balanced dynamical system.
+Therefore, CBLSTM-SNP can be viewed as a compensation-balanced dynamical system.
 
 ---
 
 # Lemma 1: Boundedness of Hidden States
 
-## Question
+## Research Question
 
-A natural question is:
+A natural concern is:
 
 > Will the compensation mechanism continuously increase the hidden state and eventually cause numerical explosion?
 
-The boundedness lemma answers this question.
+The boundedness lemma provides a theoretical answer.
 
 ---
 
@@ -154,19 +147,19 @@ The boundedness lemma answers this question.
 
 The hidden state satisfies
 
-[
+$$
 |u(t)|
 \le
 \gamma^t |u(0)|
 +
 \frac{M_a+\sqrt d}{1-\gamma},
-]
+$$
 
 where
 
-[
+$$
 0<\gamma<1.
-]
+$$
 
 ---
 
@@ -174,61 +167,61 @@ where
 
 The first term
 
-[
+$$
 \gamma^t|u(0)|
-]
+$$
 
 represents the influence of the initial state.
 
 Since
 
-[
+$$
 0<\gamma<1,
-]
+$$
 
-we have
+the quantity
 
-[
-\gamma^t\rightarrow 0
-]
+$$
+\gamma^t
+$$
 
-as time increases.
+gradually approaches zero as time increases.
 
-Thus the effect of the initial condition gradually disappears.
+Consequently, the effect of the initial condition diminishes over time.
 
 ---
 
 The second term
 
-[
+$$
 \frac{M_a+\sqrt d}{1-\gamma}
-]
+$$
 
 is a finite constant.
 
-This means that the hidden state can never grow without bound.
+Therefore, the hidden state can never grow without bound.
 
 ---
 
 ## Practical Meaning
 
-The boundedness theorem guarantees that:
+This lemma guarantees that:
 
 * hidden states remain finite;
-* compensation does not cause explosion;
+* compensation does not cause state explosion;
 * long-term recurrent computation remains numerically stable.
 
 ---
 
 # Theorem 2: Multi-step Lipschitz Stability
 
-## Question
+## Research Question
 
-Another important issue is:
+Another important question is:
 
 > If the input changes slightly, will the hidden state change dramatically?
 
-A reliable forecasting model should produce only small output changes when the input perturbation is small.
+A reliable forecasting model should produce only limited output variation under small input perturbations.
 
 ---
 
@@ -236,33 +229,32 @@ A reliable forecasting model should produce only small output changes when the i
 
 Consider two trajectories:
 
-[
+$$
 u(t)
-]
+$$
 
 and
 
-[
+$$
 \tilde u(t).
-]
+$$
 
 Define
 
-[
-\Delta u(t)
-===========
-
-u(t)-\tilde u(t),
-]
+$$
+\Delta u(t)=u(t)-\tilde u(t),
+$$
 
 and
 
-[
-\Delta x(t)
-===========
+$$
+\Delta x(t)=x(t)-\tilde x(t).
+$$
 
-x(t)-\tilde x(t).
-]
+Here:
+
+* $\Delta u(t)$ measures the difference between hidden states.
+* $\Delta x(t)$ measures the difference between inputs.
 
 ---
 
@@ -270,15 +262,13 @@ x(t)-\tilde x(t).
 
 The theorem proves
 
-[
+$$
 |\Delta u(t)|
 \le
-\alpha
-|\Delta u(t-1)|
+\alpha |\Delta u(t-1)|
 +
-\beta
-|\Delta x(t)|.
-]
+\beta |\Delta x(t)|.
+$$
 
 ---
 
@@ -286,17 +276,13 @@ The theorem proves
 
 The parameter
 
-[
+$$
 \alpha
-]
+$$
 
 measures how strongly previous-state errors propagate through time.
 
-### Case 1
-
-[
-\alpha<1
-]
+### Case 1: α < 1
 
 Errors gradually decrease.
 
@@ -316,11 +302,7 @@ The system is stable.
 
 ---
 
-### Case 2
-
-[
-\alpha=1
-]
+### Case 2: α = 1
 
 Errors remain unchanged.
 
@@ -332,15 +314,11 @@ Errors remain unchanged.
 100
 ```
 
-Neutral stability.
+The system is neutrally stable.
 
 ---
 
-### Case 3
-
-[
-\alpha>1
-]
+### Case 3: α > 1
 
 Errors grow continuously.
 
@@ -360,9 +338,9 @@ The system becomes unstable.
 
 Therefore,
 
-[
+$$
 \boxed{\alpha<1}
-]
+$$
 
 is the key condition for long-term stability.
 
@@ -372,13 +350,13 @@ is the key condition for long-term stability.
 
 The parameter
 
-[
+$$
 \beta
-]
+$$
 
 measures the sensitivity of the model to input perturbations.
 
-A smaller value of (\beta) means:
+A smaller value of $\beta$ indicates:
 
 * stronger robustness;
 * better resistance to noise;
@@ -388,24 +366,23 @@ A smaller value of (\beta) means:
 
 # Multi-step Stability
 
-The theorem further proves
+The theorem further establishes
 
-[
+$$
 |\Delta u(T)|
 \le
-\alpha^T
-|\Delta u(0)|
+\alpha^T|\Delta u(0)|
 +
 \frac{1-\alpha^T}{1-\alpha}
 \beta
-\sup_t|\Delta x(t)|.
-]
+\sup_{t\le T}|\Delta x(t)|.
+$$
 
 This result implies:
 
 1. Initial-state errors gradually vanish.
 2. Input perturbations remain bounded.
-3. Hidden-state trajectories remain stable over long horizons.
+3. Hidden-state trajectories remain stable over long forecasting horizons.
 
 ---
 
@@ -413,15 +390,15 @@ This result implies:
 
 The compensation mechanism contributes additional terms to both
 
-[
+$$
 \alpha
-]
+$$
 
 and
 
-[
+$$
 \beta.
-]
+$$
 
 However:
 
@@ -437,18 +414,22 @@ Instead, it helps prevent excessive information loss and improves the smoothness
 
 # Overall Theoretical Conclusion
 
-The theoretical analysis establishes three important properties of CBLSTM-SNP:
+The theoretical analysis establishes three important properties of CBLSTM-SNP.
 
-1. **Dynamic Balance**
+## Dynamic Balance
 
-   Hidden-state evolution is governed by the interaction of memory retention, spike consumption, and adaptive compensation.
+Hidden-state evolution is governed by the interaction of:
 
-2. **State Boundedness**
+* memory retention,
+* spike consumption,
+* adaptive compensation.
 
-   Hidden states remain uniformly bounded and cannot diverge during long-term recurrent computation.
+## State Boundedness
 
-3. **Lipschitz Stability**
+Hidden states remain uniformly bounded and cannot diverge during long-term recurrent computation.
 
-   Small perturbations in inputs lead to bounded changes in hidden states, ensuring robust and stable temporal modeling.
+## Lipschitz Stability
+
+Small perturbations in inputs lead to bounded changes in hidden states, ensuring robust and stable temporal modeling.
 
 Together, these results provide theoretical support for the effectiveness and reliability of the proposed compensation-balanced recurrent architecture.
