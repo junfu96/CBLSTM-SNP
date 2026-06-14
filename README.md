@@ -12,7 +12,11 @@ The core of the proof is that the hidden state u(t) will not increase infinitely
 
 ||u(t)|| ≤ ||r(t) ⊙ u(t−1)|| + ||c(t) ⊙ a(t)|| + ||k(t) ⊙ z(t)|| Since r(t) ranges from 0 to 1, the first term at most shrinks or preserves u(t-1), without significantly altering its value. Therefore:
 
+
+
 ||r(t) ⊙ u(t−1)|| ≤ ||r(t)||∞ · ||u(t−1)||
+
+
 
 Let's further assume ||r(t)||∞ ≤ γ < 1, then this term becomes:
 
@@ -26,6 +30,8 @@ In the third term, k(t) and z(t) are both bounded, so the third term can only co
 This section proves that if the input changes slightly, the hidden state will not be amplified excessively. We define the original perturbation and the perturbation trajectory. Then we define the difference:
 
 Δu(t) = u(t) − ũ(t)
+
+
 Δx(t) = x(t) − x̃(t)
 
 In the following equation,
@@ -34,6 +40,8 @@ this means that α controls the propagation of "old errors"; β controls the pro
 
 The product difference is broken down as follows:
 c ⊙ a − c̃ ⊙ ã = c ⊙ (a − ã) + (c − c̃) ⊙ ã
+
+
 k ⊙ z − k̃ ⊙ z̃ = k ⊙ (z − z̃) + (k − k̃) ⊙ z̃
 
 ||Δu(t)|| ≤ α ||Δu(t−1)|| + β ||Δx(t)||
