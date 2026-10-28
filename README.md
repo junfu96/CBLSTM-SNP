@@ -1,3 +1,5 @@
+If you need the source code, please contact the author via email at: junfu.xhu@foxmail.com
+
 # CBLSTM-SNP
 Theoretical Derivation
 # The overall proof of the three-part theory
